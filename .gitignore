@@ -217,3 +217,14 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 .venv/
+
+# raw experiment output (compressed copies results/e*.csv.gz are committed)
+results/e[0-9].csv
+# LaTeX build files
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.synctex.gz

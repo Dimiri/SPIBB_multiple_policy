@@ -1,0 +1,5 @@
+numpy>=2.0,<2.3
+scipy
+pandas
+matplotlib
+z3-solver   # only needed for the upstream code (reproduce_spibb.py, validate_against_upstream.py)
