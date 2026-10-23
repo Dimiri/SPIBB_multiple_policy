@@ -32,3 +32,17 @@ We collect data from several different policies and remember which policy produc
 Because the environment behaves the same no matter who is acting, we pool all the data to learn how the environment works.
 The policy label is only used to decide what we compare against: either one specific known policy, or an "average" policy estimated
 from all the data. The new policy we learn only looks at the current state, because in practice there's no label when you use it.
+
+## Reproducing standard SPIBB
+
+Requires Python 3.10+.
+
+```powershell
+git clone --recurse-submodules <our-repo-url>
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python src/reproduce_spibb.py --seeds 1 2 3
+```
+
+Expected: `baseline 5.22, optimal 11.74`. Values stay at 5.22 up to 200 trajectories, reach about 11.55 at 1,000 and 11.74 from 5,000. Results go to `results/e1_reproduction.csv`.

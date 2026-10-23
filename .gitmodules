@@ -1,0 +1,3 @@
+[submodule "external/parametric_spibb"]
+	path = external/parametric_spibb
+	url = https://github.com/kasperengelen/parametric_spibb
