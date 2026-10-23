@@ -46,3 +46,40 @@ python src/reproduce_spibb.py --seeds 1 2 3
 ```
 
 Expected: `baseline 5.22, optimal 11.74`. Values stay at 5.22 up to 200 trajectories, reach about 11.55 at 1,000 and 11.74 from 5,000. Results go to `results/e1_reproduction.csv`.
+
+## MB-SPIBB: SPIBB with multiple behavior policies (paper code)
+
+`src/mbspibb/` contains everything behind the paper in `paper/` (numpy only; the upstream code is
+only used to export the gridworld and to validate our SPIBB against it).
+
+| file | content |
+|---|---|
+| `core.py` | counts, MLE / pessimistic models, Pi_b-SPIBB, reference selection, bootstrap visitation beta |
+| `envs.py` | gridworld (from upstream), random MDPs (Laroche et al. 2019 style), the 5-state *detour* counterexample |
+| `runner.py` | one run: per-policy datasets, all methods (own-data SPIBB, pooled SPIBB, MB-SPIBB, BC reference, basic RL, selection) |
+| `experiments.py` | e0 counterexample, e1 gridworld data size, e2 share of reference data, e3 random MDPs, e4 guard level tau |
+| `analyze.py` | figures (`figures/`) and summary tables (`tables/`) |
+| `paper_numbers.py` | every number quoted in the paper -> `tables/paper_numbers.json` |
+| `validate_against_upstream.py` | our Pi_b-SPIBB vs. upstream on identical data (max diff ~3e-14) |
+
+```powershell
+cd src
+python -m mbspibb.validate_against_upstream   # optional sanity check, needs the submodule
+python -m mbspibb.experiments e0 --runs 2000
+python -m mbspibb.experiments e1 --runs 1000
+python -m mbspibb.experiments e2 --runs 500
+python -m mbspibb.experiments e3 --runs 300
+python -m mbspibb.experiments e4 --runs 300   # ~20 min in total on 2 cores
+python -m mbspibb.analyze
+python -m mbspibb.paper_numbers
+cd ../paper; python fill_numbers.py            # numbers -> experiments.tex (copy figures/*.pdf to paper/figures/)
+```
+
+The raw results of the runs used in the paper are in `results/e*.csv.gz`; `analyze.py` and
+`paper_numbers.py` read them directly, so the figures and numbers can be regenerated without re-running.
+
+**Methods in the code:** `spibb_own` = SPIBB on the reference's data, `spibb_own_full` = oracle with all data
+from the reference, `mb_spibb` = naive pooled SPIBB, `mb_spibb_p` = pooled + pessimistic on B (no guard),
+`mb_spibb_pg` = **MB-SPIBB** (pessimistic + guard, falls back to `spibb_own`), `mb_spibb_pg_select` = MB-SPIBB
+with the reference chosen by a Hoeffding LCB on its own returns, `spibb_bc` = behavior-cloned mixture reference,
+`basic_rl` = greedy policy of the pooled MLE MDP.
